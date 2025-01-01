@@ -41,7 +41,8 @@ data "remote_file" "kubeconfig" {
   }
   path = "/etc/rancher/k3s/k3s.yaml"
   depends_on = [
-    ssh_resource.start_k3s
+    ssh_resource.start_k3s,
+    ssh_resource.install_k3s,
   ]
 }
 
