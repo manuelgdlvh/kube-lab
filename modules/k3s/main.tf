@@ -2,34 +2,49 @@ resource "ssh_resource" "install_k3s" {
   for_each = local.servers
   host     = each.value.host
   user     = each.value.user
+  port     = each.value.port
   private_key = file(each.value.private_key)
-  commands = [
-    "if ! command -v k3s &>/dev/null; then",
-    "  echo 'K3s is not installed, proceeding with installation...'",
-    "  curl -sfL ${var.k3s.download_url} | INSTALL_K3S_VERSION='${var.k3s.version}' sh -s - server --docker --write-kubeconfig-mode 644 --disable=traefik",
-    "else",
-    "  echo 'K3s is already installed.'",
-    "fi"
-  ]
-  timeout = "10m"
-}
 
+  when = "create"
+
+  file {
+    content = file("${path.module}/scripts/install_k3s.sh")
+    destination = "/tmp/install_k3s.sh"
+    permissions = "0700"
+  }
+
+  commands = [
+    "/tmp/install_k3s.sh ${var.k3s.download_url} ${var.k3s.version}",
+    //"rm -f /tmp/install_k3s.sh"
+
+  ]
+
+  timeout = "300s"
+}
 
 resource "ssh_resource" "start_k3s" {
   for_each = local.servers
   host     = each.value.host
   user     = each.value.user
+  port     = each.value.port
   private_key = file(each.value.private_key)
+
+  file {
+    content = file("${path.module}/scripts/start_k3s.sh")
+    destination = "/tmp/start_k3s.sh"
+    permissions = "0700"
+  }
+
+  triggers = {
+    always_run = timestamp()
+  }
   commands = [
-    "if systemctl is-active --quiet k3s; then",
-    "  echo 'K3s is installed and running, nothing to do.'",
-    "else",
-    "  echo 'K3s is installed but not running, starting the service...'",
-    "  sudo systemctl start k3s",
-    "fi"
+    "/tmp/start_k3s.sh",
+    "rm -f /tmp/start_k3s.sh"
   ]
 
-  timeout = "10m"
+
+  timeout = "20s"
 }
 
 data "remote_file" "kubeconfig" {
@@ -38,6 +53,7 @@ data "remote_file" "kubeconfig" {
     host = each.value.host
     user = each.value.user
     private_key = file(each.value.private_key)
+    port = each.value.port
   }
   path = "/etc/rancher/k3s/k3s.yaml"
   depends_on = [

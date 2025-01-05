@@ -19,6 +19,7 @@ variable "servers" {
   type = list(object({
     host        = string
     user        = string
+    port        = number
     private_key = string
   }))
   default = []

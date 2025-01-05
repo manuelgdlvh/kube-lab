@@ -1,0 +1,11 @@
+apiVersion: v2
+name: microservices
+version: 0.1.0
+description: A simple app deployment for Kubernetes
+appVersion: "1.0.0"
+keywords:
+  - "microservices"
+  - "web"
+maintainers:
+  - name: Manuel Garcia de la Vega Hoyo
+    email: manuelgdlvh@gmail.com

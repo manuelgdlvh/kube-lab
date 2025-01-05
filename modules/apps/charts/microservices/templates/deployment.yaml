@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: "{{ .Values.image.name }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: {{ .Values.image.containerPort }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ .Values.volume.mountPath }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: "{{ .Release.Name }}"
+            items:
+              - key: {{ .Values.volume.key }}
+                path: {{ .Values.volume.key }}

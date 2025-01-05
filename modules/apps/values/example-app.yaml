@@ -1,0 +1,23 @@
+image:
+  name: example-app
+  repository: nginx
+  tag: "latest"
+  pullPolicy: IfNotPresent
+  containerPort: 80
+
+volume:
+  mountPath: "/etc/nginx/"
+  key: nginx.conf
+  data:
+    nginx.config: |
+      events {
+      }
+      http {
+        server {
+          listen 80;
+          location / {
+            return 200 "Hello world!";
+          }
+        }
+      }
+
