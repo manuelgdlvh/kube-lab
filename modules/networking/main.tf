@@ -54,9 +54,9 @@ resource "kubernetes_network_policy" "postgresql" {
   spec {
     pod_selector {
       match_expressions {
-        key      = "name"
+        key      = "app.kubernetes.io/instance"
         operator = "In"
-        values = ["postgresql-0"]
+        values = ["postgresql"]
       }
     }
 
@@ -75,17 +75,22 @@ resource "kubernetes_network_policy" "postgresql" {
 
       from {
         ip_block {
-          cidr = "0.0.0.0/0"
-          except = [
-            "192.168.1.50/32",
-            "192.168.1.111/32",
-            "192.168.1.112/32"
-          ]
+          cidr = "192.168.1.50/32"
+        }
+      }
+      from {
+        ip_block {
+          cidr = "192.168.1.111/32"
+        }
+      }
+      from {
+        ip_block {
+          cidr = "192.168.1.112/32"
         }
       }
     }
 
     egress {}
-    policy_types = ["Ingress", "Egress"]
+    policy_types = ["Ingress"]
   }
 }

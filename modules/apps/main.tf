@@ -20,8 +20,8 @@ resource "helm_release" "postgresql" {
   values = [
     "${file("./values/postgresql.yaml")}"
   ]
-
 }
+
 
 
 resource "helm_release" "example_app" {
@@ -31,8 +31,7 @@ resource "helm_release" "example_app" {
   description = "Example application"
   values = [
     "${file("./values/example-app.yaml")}"
-  ]
-
+  ]# TYPE go_memstats_heap_sys_bytes gauge
 }
 
 
