@@ -11,6 +11,19 @@ resource "helm_release" "haproxy-ingress" {
 }
 
 
+resource "helm_release" "postgresql" {
+  name        = "postgresql"
+  chart       = "postgresql"
+  repository  = "https://charts.bitnami.com/bitnami"
+  version     = "16.0.0"
+  description = "Postgresql database instance"
+  values = [
+    "${file("./values/postgresql.yaml")}"
+  ]
+
+}
+
+
 resource "helm_release" "example_app" {
   name        = "example-app"
   chart       = "./charts/microservices"

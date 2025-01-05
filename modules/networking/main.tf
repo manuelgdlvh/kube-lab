@@ -4,7 +4,7 @@ resource "kubernetes_ingress_v1" "main_ingress" {
     annotations = {
       "haproxy.org/rate-limit-requests" : "60",
       "haproxy.org/rate-limit-size" : "1000000",
-      "haproxy.org/path-rewrite": "/"
+      "haproxy.org/path-rewrite" : "/"
     }
   }
 
@@ -22,7 +22,7 @@ resource "kubernetes_ingress_v1" "main_ingress" {
             }
           }
           path_type = "Prefix"
-          path = "/example"
+          path      = "/example"
         }
       }
     }
@@ -38,9 +38,54 @@ resource "kubernetes_ingress_v1" "main_ingress" {
             }
           }
           path_type = "Prefix"
-          path = "/metrics"
+          path      = "/metrics"
         }
       }
     }
+  }
+}
+
+resource "kubernetes_network_policy" "postgresql" {
+  metadata {
+    name      = "postgresql"
+    namespace = "default"
+  }
+
+  spec {
+    pod_selector {
+      match_expressions {
+        key      = "name"
+        operator = "In"
+        values = ["postgresql-0"]
+      }
+    }
+
+    ingress {
+      ports {
+        port     = "5432"
+        protocol = "TCP"
+      }
+      from {
+        namespace_selector {
+          match_labels = {
+            name = "default"
+          }
+        }
+      }
+
+      from {
+        ip_block {
+          cidr = "0.0.0.0/0"
+          except = [
+            "192.168.1.50/32",
+            "192.168.1.111/32",
+            "192.168.1.112/32"
+          ]
+        }
+      }
+    }
+
+    egress {}
+    policy_types = ["Ingress", "Egress"]
   }
 }
