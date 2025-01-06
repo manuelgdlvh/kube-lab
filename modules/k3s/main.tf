@@ -16,7 +16,6 @@ resource "ssh_resource" "install_k3s" {
   commands = [
     "/tmp/install_k3s.sh ${var.k3s.download_url} ${var.k3s.version}",
     //"rm -f /tmp/install_k3s.sh"
-
   ]
 
   timeout = "300s"

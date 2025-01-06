@@ -8,6 +8,8 @@ resource "helm_release" "haproxy-ingress" {
   values = [
     "${file("./values/haproxy-ingress.yaml")}"
   ]
+  upgrade_install = true
+
 }
 
 
@@ -20,18 +22,24 @@ resource "helm_release" "postgresql" {
   values = [
     "${file("./values/postgresql.yaml")}"
   ]
+  upgrade_install = true
+
 }
 
 
-
-resource "helm_release" "example_app" {
-  name        = "example-app"
-  chart       = "./charts/microservices"
+resource "helm_release" "content_search_service" {
+  name        = "content-search-service"
+  chart       = "./charts/rust-service"
   version     = "1.0.0"
-  description = "Example application"
+  description = "Content search service application"
   values = [
-    "${file("./values/example-app.yaml")}"
-  ]# TYPE go_memstats_heap_sys_bytes gauge
+    "${file("./values/content-search-service.yaml")}"
+  ]
+  upgrade_install = true
+
 }
+
+
+
 
 

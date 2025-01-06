@@ -6,15 +6,4 @@ metadata:
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
-  nginx.conf: '
-events {
-}
-http {
-   server {
-       listen 80;
-       location / {
-           return 200 "Hello world!";
-       }
-   }
-}
-'
+  Config.toml: {{ .Values.config | toYaml | nindent 4 }}

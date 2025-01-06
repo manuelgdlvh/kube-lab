@@ -18,18 +18,18 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-        - name: "{{ .Values.image.name }}"
+        - name: "{{ .Release.Name }}"
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "Always"
           ports:
-            - containerPort: {{ .Values.image.containerPort }}
+            - containerPort: 8080
           volumeMounts:
             - name: config-volume
-              mountPath: {{ .Values.volume.mountPath }}
+              mountPath: /app
       volumes:
         - name: config-volume
           configMap:
             name: "{{ .Release.Name }}"
             items:
-              - key: {{ .Values.volume.key }}
-                path: {{ .Values.volume.key }}
+              - key: Config.toml
+                path: Config.toml
